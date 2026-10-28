@@ -41,7 +41,7 @@ build_lib() {
 }
 
 # gen_xml <stock xml> <out xml>: one DEEP_BUFFER mix port per sample rate, used by the Bluetooth A2DP
-# sinks (44.1/48/88.2/96 kHz) and the wired headphone sinks (additionally 176.4/192 kHz).
+# sinks (44.1/48/88.2/96 kHz) and by the wired headphone and USB audio sinks (additionally 176.4/192 kHz).
 gen_xml() {
   # pass 1: add the new mix ports after the stock deep_buffer_out port
   awk '
@@ -99,7 +99,7 @@ gen_xml() {
 
 GUARD="$SRCDIR/guard.conf"
 : > "$GUARD"
-ui_print "- Hi-Res Unlocker v0.6.2-usb-test ($MODEL, Android 16)"
+ui_print "- Hi-Res Unlocker v0.6.1 ($MODEL, Android 16)"
 
 ui_print "  * audio policy library"
 build_lib "$LIB" "$SRCDIR/system/lib64/libaudiopolicymanagerdefault.so" "$APM_OLD_HEX" "$APM_NEW_HEX" "$APM_OLD_OCT" "$APM_NEW_OCT" 0 1 APM
@@ -120,7 +120,7 @@ grep -q 'deep_buffer_rate_192k_out' "$OUTXML" || abort "! Generated config is in
 echo "XML_STOCK_SHA=$(sha256sum "$STOCKDIR/audio_module_config_primary.xml" | cut -d' ' -f1)" >> "$GUARD"
 echo "XML_OUT_SHA=$(sha256sum "$OUTXML" | cut -d' ' -f1)" >> "$GUARD"
 
-ui_print "  * per-rate deep-buffer mix ports: 44.1/48/88.2/96 kHz for Bluetooth A2DP, plus 176.4/192 kHz for wired headphones"
+ui_print "  * per-rate deep-buffer mix ports: 44.1/48/88.2/96 kHz for Bluetooth A2DP, plus 176.4/192 kHz for wired headphones and USB audio"
 ui_print "  * audio policy: score the sampling rate for requests <= 48 kHz too"
 ui_print "  * audio HAL: deep-buffer buffer rounded up to 16 frames (fixes 44.1/88.2 kHz crackle)"
 set_perm_recursive "$SRCDIR/system/vendor/etc/audio" 0 0 0755 0644 u:object_r:vendor_configs_file:s0
