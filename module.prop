@@ -1,6 +1,6 @@
 id=bt_hires_mixer
 name=BT Hi-Res Mixer (NX809J)
-version=v0.4.0
-versionCode=5
+version=v0.5.0
+versionCode=6
 author=XPRAMT
 description=Hi-res mixer for NX809J: per-rate deep-buffer mix ports for Bluetooth A2DP and wired headphones plus a one-instruction audio policy patch so 44.1/48 kHz tracks pick the output with their own rate. Overlays audio_module_config_primary.xml and libaudiopolicymanagerdefault.so.

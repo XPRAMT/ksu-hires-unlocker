@@ -19,8 +19,13 @@ PORT_RATES = (
     ("deep_buffer_rate_44k_out", 44100),
     ("deep_buffer_rate_88k_out", 88200),
     ("deep_buffer_rate_96k_out", 96000),
+    # v0.5.0 experiment: wired headphones only (LDAC does not go above 96 kHz)
+    ("deep_buffer_rate_176k_out", 176400),
+    ("deep_buffer_rate_192k_out", 192000),
 )
-NEW_PORTS = [name for name, _ in PORT_RATES]
+WIRED_ONLY_PORTS = ("deep_buffer_rate_176k_out", "deep_buffer_rate_192k_out")
+BT_PORTS = [name for name, _ in PORT_RATES if name not in WIRED_ONLY_PORTS]
+WIRED_PORTS = [name for name, _ in PORT_RATES]
 PCM_TYPES = ("INT_16_BIT", "FIXED_Q_8_24", "INT_24_BIT", "INT_32_BIT")
 
 stock_path, out_path = sys.argv[1], sys.argv[2]
@@ -50,7 +55,7 @@ for sink in MIX_SINKS:
     sources = mm.group(2).split(",")
     assert "deep_buffer_out" in sources, sink
     i = sources.index("deep_buffer_out")
-    sources[i:i + 1] = NEW_PORTS
+    sources[i:i + 1] = WIRED_PORTS if sink in WIRED_SINKS else BT_PORTS
     text = text[:mm.start(2)] + ",".join(sources) + text[mm.end(2):]
 
 io.open(out_path, "w", encoding="utf-8", newline="").write(text)
