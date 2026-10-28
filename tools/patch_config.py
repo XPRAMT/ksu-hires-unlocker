@@ -10,8 +10,8 @@ BT_SINKS = ("bt_a2dp_out", "bt_a2dp_headphones", "bt_a2dp_speaker")
 # One DEEP_BUFFER port per rate: the policy scores an exact sample-rate match
 # (IOProfile::getCompatibilityScore), so each track opens a thread at its own rate.
 PORT_RATES = (
+    ("deep_buffer_bt_48k_out", 48000),   # v0.2.1 experiment E1: 48k declared before 44k
     ("deep_buffer_bt_44k_out", 44100),
-    ("deep_buffer_bt_48k_out", 48000),
     ("deep_buffer_bt_88k_out", 88200),
     ("deep_buffer_bt_96k_out", 96000),
 )

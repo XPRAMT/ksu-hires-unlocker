@@ -1,6 +1,6 @@
 id=bt_hires_mixer
 name=BT Hi-Res Mixer (NX809J)
-version=v0.2.0
-versionCode=2
+version=v0.2.1
+versionCode=3
 author=XPRAMT
 description=Let Bluetooth A2DP (LDAC/hardware offload) media use a deep-buffer mixer at the track sample rate (44.1/48/88.2/96 kHz) instead of the fixed 48 kHz. Overlays audio_module_config_primary.xml (sku_canoe).
