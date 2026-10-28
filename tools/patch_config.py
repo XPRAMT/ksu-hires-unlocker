@@ -7,8 +7,10 @@ import re
 import sys
 
 BT_SINKS = ("bt_a2dp_out", "bt_a2dp_headphones", "bt_a2dp_speaker")
-# One DEEP_BUFFER port per rate: the policy scores an exact sample-rate match
-# (IOProfile::getCompatibilityScore), so each track opens a thread at its own rate.
+# One DEEP_BUFFER port per rate. NOTE (verified on device, see AGENTS.md): AudioPolicyManager::
+# selectOutput only compares sample rates for requests ABOVE 48000 Hz (nearest rate >= request wins);
+# for requests <= 48000 Hz all outputs tie and the output opened first wins, and that open order is
+# not controllable from this file. So 88.2k / 96k content follows the file, 44.1k / 48k content does not.
 PORT_RATES = (
     ("deep_buffer_bt_48k_out", 48000),   # v0.2.1 experiment E1: 48k declared before 44k
     ("deep_buffer_bt_44k_out", 44100),
