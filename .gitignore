@@ -3,3 +3,4 @@ __pycache__/
 # ROM binaries are regenerated: pull the stock lib from the phone, then run tools/patch_apm_lib.py
 system/lib64/*.so
 original/*.so.stock
+system/vendor/lib64/hw/*.so
