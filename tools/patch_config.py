@@ -10,10 +10,11 @@ import sys
 BT_SINKS = ("bt_a2dp_out", "bt_a2dp_headphones", "bt_a2dp_speaker")
 WIRED_SINKS = ("wired_headset", "wired_headphones")   # v0.4.0: let the wired headphone path follow the file too
 MIX_SINKS = BT_SINKS + WIRED_SINKS
-# One DEEP_BUFFER port per rate. NOTE (verified on device, see AGENTS.md): AudioPolicyManager::
-# selectOutput only compares sample rates for requests ABOVE 48000 Hz (nearest rate >= request wins);
-# for requests <= 48000 Hz all outputs tie and the output opened first wins, and that open order is
-# not controllable from this file. So 88.2k / 96k content follows the file, 44.1k / 48k content does not.
+# One DEEP_BUFFER port per rate. NOTE: stock AudioPolicyManager::selectOutput only compares sample
+# rates for requests ABOVE 48000 Hz; for requests <= 48000 Hz all outputs tie and the output opened
+# first wins (open order is not controllable from this file). The module therefore also patches the
+# policy library (tools/patch_apm_lib.py) so every requested rate is scored and each track picks the
+# port with its own rate.
 PORT_RATES = (
     ("deep_buffer_rate_48k_out", 48000),   # v0.2.1 experiment E1: 48k declared before 44k
     ("deep_buffer_rate_44k_out", 44100),
