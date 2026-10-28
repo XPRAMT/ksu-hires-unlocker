@@ -6,16 +6,19 @@ import io
 import re
 import sys
 
+# sinks that get the per-rate deep-buffer ports instead of the 48 kHz deep_buffer_out
 BT_SINKS = ("bt_a2dp_out", "bt_a2dp_headphones", "bt_a2dp_speaker")
+WIRED_SINKS = ("wired_headset", "wired_headphones")   # v0.4.0: let the wired headphone path follow the file too
+MIX_SINKS = BT_SINKS + WIRED_SINKS
 # One DEEP_BUFFER port per rate. NOTE (verified on device, see AGENTS.md): AudioPolicyManager::
 # selectOutput only compares sample rates for requests ABOVE 48000 Hz (nearest rate >= request wins);
 # for requests <= 48000 Hz all outputs tie and the output opened first wins, and that open order is
 # not controllable from this file. So 88.2k / 96k content follows the file, 44.1k / 48k content does not.
 PORT_RATES = (
-    ("deep_buffer_bt_48k_out", 48000),   # v0.2.1 experiment E1: 48k declared before 44k
-    ("deep_buffer_bt_44k_out", 44100),
-    ("deep_buffer_bt_88k_out", 88200),
-    ("deep_buffer_bt_96k_out", 96000),
+    ("deep_buffer_rate_48k_out", 48000),   # v0.2.1 experiment E1: 48k declared before 44k
+    ("deep_buffer_rate_44k_out", 44100),
+    ("deep_buffer_rate_88k_out", 88200),
+    ("deep_buffer_rate_96k_out", 96000),
 )
 NEW_PORTS = [name for name, _ in PORT_RATES]
 PCM_TYPES = ("INT_16_BIT", "FIXED_Q_8_24", "INT_24_BIT", "INT_32_BIT")
@@ -39,8 +42,8 @@ for name, rate in PORT_RATES:
         indent, name, profiles, indent)
 text = text[:m.end()] + block + text[m.end():]
 
-# 2. A2DP sinks use the new ports instead of the 48 kHz deep_buffer_out
-for sink in BT_SINKS:
+# 2. Bluetooth A2DP and wired headphone sinks use the new ports instead of the 48 kHz deep_buffer_out
+for sink in MIX_SINKS:
     pattern = re.compile(r'(<route type="mix" sink="%s" sources=")([^"]*)(")' % sink)
     mm = pattern.search(text)
     assert mm, sink

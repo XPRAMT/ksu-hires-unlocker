@@ -8,13 +8,14 @@ X_STOCK=8afbce6c280b731fb4d9aacc463f98db6be5f07c33489fb3f7a2e268645e30be
 X_V1=c347220963db9c934095bc03692040af3564ea050af5f3757ecb68285ba8fc1f
 X_V2=03157e48ea2bfec50941ecd02b9fb86852942cde6e36cafc092230621763c311
 X_V3=59364c812716987249fefb909c1b512ae94aae83675fda3524ec20e35cf7b85c
+X_V4=ed34ecffe6ae02fb94406425e7948004e0954b5f61a3d81abe7aa9312d0d3e4b
 L_STOCK=d8a516c2c83ed712072f2f4cc5b85b7e7de10ba70e739c21909f3defd0ab7a93
 L_PATCH=e4b9406b60187d6a6487e7a8f251b9a9bbf24eba54d2fadd8b4a52d08a3b29c8
 
 CX=$(sha256sum "$XML" 2>/dev/null | cut -d' ' -f1)
 CL=$(sha256sum "$LIB" 2>/dev/null | cut -d' ' -f1)
 OKX=0; OKL=0
-case "$CX" in "$X_STOCK"|"$X_V1"|"$X_V2"|"$X_V3") OKX=1 ;; esac
+case "$CX" in "$X_STOCK"|"$X_V1"|"$X_V2"|"$X_V3"|"$X_V4") OKX=1 ;; esac
 case "$CL" in "$L_STOCK"|"$L_PATCH") OKL=1 ;; esac
 if [ "$OKX" = 1 ] && [ "$OKL" = 1 ]; then
   rm -f "$MODDIR/skip_mount"
