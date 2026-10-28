@@ -70,7 +70,7 @@ gen_xml() {
   BEGIN {
     bt = "deep_buffer_rate_48k_out,deep_buffer_rate_44k_out,deep_buffer_rate_88k_out,deep_buffer_rate_96k_out"
     wd = bt ",deep_buffer_rate_176k_out,deep_buffer_rate_192k_out"
-    nsink = split("bt_a2dp_out bt_a2dp_headphones bt_a2dp_speaker wired_headset wired_headphones", sink, " ")
+    nsink = split("bt_a2dp_out bt_a2dp_headphones bt_a2dp_speaker wired_headset wired_headphones usb_device_out usb_headset", sink, " ")
     for (k = 1; k <= nsink; k++) want[sink[k]] = (k <= 3) ? bt : wd
   }
   {
@@ -99,7 +99,7 @@ gen_xml() {
 
 GUARD="$SRCDIR/guard.conf"
 : > "$GUARD"
-ui_print "- Hi-Res Unlocker v0.6.1 ($MODEL, Android 16)"
+ui_print "- Hi-Res Unlocker v0.6.2-usb-test ($MODEL, Android 16)"
 
 ui_print "  * audio policy library"
 build_lib "$LIB" "$SRCDIR/system/lib64/libaudiopolicymanagerdefault.so" "$APM_OLD_HEX" "$APM_NEW_HEX" "$APM_OLD_OCT" "$APM_NEW_OCT" 0 1 APM
