@@ -4,3 +4,5 @@ __pycache__/
 system/lib64/*.so
 original/*.so.stock
 system/vendor/lib64/hw/*.so
+# generated on the phone at install time (tools/patch_config.py is the reference implementation)
+system/
