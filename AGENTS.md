@@ -17,6 +17,7 @@
 - `devices/<裝置>/device.sh`：REQ_PROP/REQ_VAL/REQ_SDK、XML 路徑與備份檔名、補丁 pattern、HAS_HAL、AS_SKIP、`gen_xml`（設定檔格式不同，各自實作）。
 - `devices/<裝置>/module.prop`、`devices/<裝置>/tools/*.py`（PC 端參考實作，會一起打包進 zip 的 `tools/`）。
 - `build.py`（`build.ps1`、`build.sh` 只是包裝）→ `dist/<模組 id>-<version>.zip`。zip 為扁平結構、LF、固定時間戳。
+- `VERSION`、`RELEASE_NOTES.md`、`release.ps1` / `release.sh` → `tools/release.py`：發布流程（見「發布」）。
 - `tools/selftest/`：在 Linux 上用假檔案跑安裝與開機檢查（不需要裝置）。
 
 ## 裝置差異
@@ -30,13 +31,15 @@
 - 自測：`tools/selftest/run.sh nx809j dist/bt_hires_mixer-v0.8.0.zip`（需要 bash、awk、od、dd、unzip）。
 
 ## 發布
-- 舊標籤（從 RedMagicX 轉來，名稱不變）：`hires-mixer-v0.7.0`（commit `38543d2`）、`hires-mixer-v0.8.0`（commit `ca388fd`，Latest），附件 `bt_hires_mixer_vX.Y.Z.zip` 與 RedMagicX 上的原檔相同。
-- 之後的標籤：`nx809j-vX.Y.Z`、`liuqin-vX.Y.Z`，每個 release 只附該裝置的 zip（`dist/<模組 id>-<version>.zip`）。
-- RedMagicX 仍保留舊的兩個 release 與標籤；要不要刪除由使用者決定。
-- RedMagicX 的 README 只留連到本儲存庫的連結；詳細說明與實測數據放在本儲存庫的 README。
+- 版本：根目錄 `VERSION`（X.Y.Z，所有裝置共用）。versionCode = X*10000 + Y*100 + Z（例：0.9.0 → 900），必須大於每台裝置目前的 versionCode。
+- 標籤：`vX.Y.Z`，一個 release 附所有裝置的 zip（`<模組 id>-vX.Y.Z.zip`）。不再使用 `nx809j-v…` / `liuqin-v…`。
+- 流程：寫好 `RELEASE_NOTES.md`（繁中、英文兩節，不能留 TODO）→ `.\release.ps1 -DryRun` → `.\release.ps1`。腳本 `tools/release.py`：檢查 main、乾淨、與 origin 同步、標籤未用 → 寫入各 module.prop → build.py → 驗證 zip（必要檔案、版本、無廠商檔、無 CRLF）→ 產生 `dist/release-notes-vX.Y.Z.md` → commit「Release vX.Y.Z」→ tag → push → gh release create（Latest）。-DryRun 會還原 module.prop，不 commit、不 tag、不 push。
+- 裝置從 `devices/*/`（有 device.sh 與 module.prop）自動找，新增裝置不用改腳本。
+- 舊標籤（從 RedMagicX 轉來，名稱不變）：`hires-mixer-v0.7.0`（commit `38543d2`）、`hires-mixer-v0.8.0`（commit `ca388fd`，目前 Latest）。v0.8.0 另附 liuqin v0.1.0 的 zip。
+- RedMagicX 已沒有模組的 release 與檔案，README 只留連到本儲存庫的連結。
 
 ## 規則
-- 改版時同步更新 `module.prop`（version、versionCode），installer 的版本字串由 module.prop 讀取。
+- 版本只改 `VERSION`；module.prop 的 version、versionCode 由 release 流程寫入，installer 的版本字串由 module.prop 讀取。
 - 不提交廠商檔或打包輸出（見 `.gitignore`）。
 - 刷入與實機測試由使用者進行。
 - README.md 與 README_TW.md 內容保持同步。

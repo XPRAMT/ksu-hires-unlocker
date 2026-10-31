@@ -29,7 +29,7 @@ zip 內不含任何廠商檔案。安裝程式複製裝置自己的檔案，依�
 
 ## 安裝
 
-1. 從 Releases 下載對應裝置的 zip（標籤 `nx809j-vX.Y.Z` / `liuqin-vX.Y.Z`），或自行編譯。
+1. 從 [Releases](https://github.com/XPRAMT/ksu-hires-unlocker/releases) 下載自己裝置的 zip（每個 `vX.Y.Z` release 都附所有裝置的 zip），或自行編譯。
 2. 在 KernelSU 管理器安裝後重新開機。
 3. 若重開機後沒有聲音，在 KernelSU 管理器停用模組（或進入安全模式）再重開機。
 
@@ -86,6 +86,15 @@ AOSP 的這個取樣率判斷已回報上游：[Issue Tracker 578577149](https:/
 ```
 
 輸出：`dist/<模組 id>-<version>.zip`，例如 `dist/bt_hires_mixer-v0.8.0.zip`。
+
+### 發布
+
+版本寫在 `VERSION`（X.Y.Z，所有裝置共用；versionCode = X*10000 + Y*100 + Z）。寫好 `RELEASE_NOTES.md` 後：
+
+```powershell
+.\release.ps1 -DryRun   # 只打包與驗證
+.\release.ps1           # commit 版本、打 vX.Y.Z 標籤、push、建立附所有 zip 的 GitHub release
+```
 
 在 Linux 上不需裝置的自測：`tools/selftest/run.sh nx809j dist/bt_hires_mixer-v0.8.0.zip`。
 

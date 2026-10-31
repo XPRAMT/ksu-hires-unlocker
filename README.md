@@ -29,7 +29,7 @@ The installer checks the device (`ro.product.model` / `ro.product.device`) and t
 
 ## Install
 
-1. Download the zip for your device from Releases (tags `nx809j-vX.Y.Z` / `liuqin-vX.Y.Z`), or build it yourself.
+1. Download the zip for your device from [Releases](https://github.com/XPRAMT/ksu-hires-unlocker/releases) (one release `vX.Y.Z` holds the zip of every device), or build it yourself.
 2. Install it in the KernelSU manager and reboot.
 3. If there is no sound after a reboot, disable the module in the KernelSU manager (or boot into safe mode) and reboot again.
 
@@ -86,6 +86,15 @@ Needs Python 3.
 ```
 
 Output: `dist/<module id>-<version>.zip`, for example `dist/bt_hires_mixer-v0.8.0.zip`.
+
+### Release
+
+The version is in `VERSION` (X.Y.Z, shared by every device; versionCode = X*10000 + Y*100 + Z). Write `RELEASE_NOTES.md`, then:
+
+```powershell
+.\release.ps1 -DryRun   # build and verify only
+.\release.ps1           # commit the version, tag vX.Y.Z, push, create the GitHub release with every zip
+```
 
 Smoke test on Linux, no device needed: `tools/selftest/run.sh nx809j dist/bt_hires_mixer-v0.8.0.zip`.
 
