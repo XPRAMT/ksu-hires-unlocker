@@ -26,8 +26,7 @@
 ## 規則
 - 打包輸出 *.zip 不進 git。
 - 不在 PC 以外安裝；刷入與測試由使用者進行。
-## 臨時 root（2026-10-31）
-- 平板的 KernelSU 是開機後才注入的臨時 root：完整重開會掉 root，軟重啟只跑 post-fs-data（prop 會變成 500），不會掛載模組。
-- 改用 mount_now.sh：檢查 guard SHA 後，在 init（pid 1）的 mount namespace 做 bind mount，只重啟 audioserver，失敗就全部還原。還原用 unmount_now.sh。
-- 09:14 第一次直接從 /data/adb/modules bind：init 執行 audioserver 被 SELinux 拒絕（nosuid_transition、execute_no_trans，因為 /data 是 nosuid）。20 秒內沒有拉起，腳本自動還原，audioserver 已用原廠檔恢復。
-- 修正：先把三個檔複製到 /dev/bt_hires_stage（suid tmpfs），再從那裡 bind。這個做法尚未在平板上執行驗證。
+## 掛載（臨時 root）
+- 需要 Hybrid Mount 這類 KernelSU metamodule（KernelSU v3+ 已移除內建掛載；沒有 metamodule 時只跑 post-fs-data 與 system.prop，不掛 system/vendor）。
+- 平板是 DFRoot late-load 的臨時 root：完整重開會掉 root；裝好 metamodule 後軟重啟即會掛載（2026-10-31 以 Hybrid Mount 6.2.5 確認三檔為修補版）。
+- 已排除：手動 bind mount 會與 metamodule overlay 重複；且來源在 /data（nosuid）會使 audioserver 無法啟動。
