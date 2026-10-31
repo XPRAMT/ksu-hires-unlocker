@@ -17,6 +17,8 @@ import re
 import subprocess
 import sys
 import zipfile
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import build  # noqa: E402  (zip naming shared with build.py)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPO = "XPRAMT/ksu-hires-unlocker"
@@ -128,7 +130,8 @@ def main():
         expected = {}
         for d in devs:
             mod_id = prop(saved[os.path.join(ROOT, "devices", d, "module.prop")], "id")
-            expected[d] = (mod_id, os.path.join(dist, "%s-%s.zip" % (mod_id, tag)))
+            model = build.zip_model(open(os.path.join(ROOT, "devices", d, "device.sh"), "rb").read())
+            expected[d] = (mod_id, os.path.join(dist, build.zip_name(model, tag)))
             if os.path.exists(expected[d][1]):
                 os.remove(expected[d][1])
         run(sys.executable, os.path.join(ROOT, "build.py"), *devs)

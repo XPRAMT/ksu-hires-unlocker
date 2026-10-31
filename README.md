@@ -33,7 +33,7 @@ The installer checks the device (`ro.product.model` / `ro.product.device`) and t
 2. Install it in the KernelSU manager and reboot.
 3. If there is no sound after a reboot, disable the module in the KernelSU manager (or boot into safe mode) and reboot again.
 
-The NX809J releases v0.7.0 and v0.8.0 use the older tags `hires-mixer-v0.7.0` / `hires-mixer-v0.8.0` (asset `bt_hires_mixer_vX.Y.Z.zip`).
+The NX809J releases v0.7.0 and v0.8.0 use the older tags `hires-mixer-v0.7.0` / `hires-mixer-v0.8.0` (asset `bt_hires_mixer_NX809J_vX.Y.Z.zip`).
 
 ### Backup of the stock config
 
@@ -85,7 +85,7 @@ Needs Python 3.
 ./build.sh
 ```
 
-Output: `dist/<module id>-<version>.zip`, for example `dist/bt_hires_mixer-v0.8.0.zip`.
+Output: `dist/bt_hires_mixer_<ZIP_MODEL>_<version>.zip`, for example `dist/bt_hires_mixer_NX809J_v0.8.0.zip`.
 
 ### Release
 
@@ -96,7 +96,7 @@ The version is in `VERSION` (X.Y.Z, shared by every device; versionCode = X*1000
 .\release.ps1           # commit the version, tag vX.Y.Z, push, create the GitHub release with every zip
 ```
 
-Smoke test on Linux, no device needed: `tools/selftest/run.sh nx809j dist/bt_hires_mixer-v0.8.0.zip`.
+Smoke test on Linux, no device needed: `tools/selftest/run.sh nx809j dist/bt_hires_mixer_NX809J_v0.8.0.zip`.
 
 ## Layout
 
@@ -104,7 +104,7 @@ Smoke test on Linux, no device needed: `tools/selftest/run.sh nx809j dist/bt_hir
 common/            installer, boot guard and shared helpers (same for every device)
 devices/<device>/  device.sh (device check, paths, patch patterns, config generator), module.prop, tools/ (PC reference patchers)
 tools/selftest/    fake-file test of a built zip
-build.py           packs dist/<module id>-<version>.zip (build.ps1 / build.sh wrap it)
+build.py           packs dist/bt_hires_mixer_<ZIP_MODEL>_<version>.zip (build.ps1 / build.sh wrap it)
 ```
 
 Use at your own risk. This is an unofficial project, not affiliated with RedMagic, Nubia, ZTE, Xiaomi or Qualcomm.

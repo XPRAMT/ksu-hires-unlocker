@@ -1,5 +1,6 @@
 # Device: RedMagic NX809J, Android 16. Sourced after common.sh by customize.sh and post-fs-data.sh.
 DEV_LABEL="Hi-Res Unlocker"   # installer banner: "- $DEV_LABEL <version> (<device>, Android <n>)"
+ZIP_MODEL=NX809J              # zip name: bt_hires_mixer_<ZIP_MODEL>_<version>.zip
 REQ_PROP=ro.product.model     # property that identifies the device
 REQ_VAL=NX809J
 REQ_SDK=36                    # Android 16

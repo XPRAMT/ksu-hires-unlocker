@@ -33,7 +33,7 @@ zip 內不含任何廠商檔案。安裝程式複製裝置自己的檔案，依�
 2. 在 KernelSU 管理器安裝後重新開機。
 3. 若重開機後沒有聲音，在 KernelSU 管理器停用模組（或進入安全模式）再重開機。
 
-NX809J 的 v0.7.0 與 v0.8.0 使用舊標籤 `hires-mixer-v0.7.0` / `hires-mixer-v0.8.0`（附件 `bt_hires_mixer_vX.Y.Z.zip`）。
+NX809J 的 v0.7.0 與 v0.8.0 使用舊標籤 `hires-mixer-v0.7.0` / `hires-mixer-v0.8.0`（附件 `bt_hires_mixer_NX809J_vX.Y.Z.zip`）。
 
 ### 原廠設定備份
 
@@ -85,7 +85,7 @@ AOSP 的這個取樣率判斷已回報上游：[Issue Tracker 578577149](https:/
 ./build.sh
 ```
 
-輸出：`dist/<模組 id>-<version>.zip`，例如 `dist/bt_hires_mixer-v0.8.0.zip`。
+輸出：`dist/bt_hires_mixer_<ZIP_MODEL>_<version>.zip`，例如 `dist/bt_hires_mixer_NX809J_v0.8.0.zip`。
 
 ### 發布
 
@@ -96,7 +96,7 @@ AOSP 的這個取樣率判斷已回報上游：[Issue Tracker 578577149](https:/
 .\release.ps1           # commit 版本、打 vX.Y.Z 標籤、push、建立附所有 zip 的 GitHub release
 ```
 
-在 Linux 上不需裝置的自測：`tools/selftest/run.sh nx809j dist/bt_hires_mixer-v0.8.0.zip`。
+在 Linux 上不需裝置的自測：`tools/selftest/run.sh nx809j dist/bt_hires_mixer_NX809J_v0.8.0.zip`。
 
 ## 結構
 
@@ -104,7 +104,7 @@ AOSP 的這個取樣率判斷已回報上游：[Issue Tracker 578577149](https:/
 common/            安裝程式、開機檢查與共用函式（所有裝置相同）
 devices/<裝置>/    device.sh（裝置檢查、路徑、補丁 pattern、設定檔產生）、module.prop、tools/（PC 端參考補丁程式）
 tools/selftest/    以假檔案測試打包好的 zip
-build.py           打包 dist/<模組 id>-<version>.zip（build.ps1 / build.sh 是包裝）
+build.py           打包 dist/bt_hires_mixer_<ZIP_MODEL>_<version>.zip（build.ps1 / build.sh 是包裝）
 ```
 
 使用風險自負。本專案為非官方專案，與 RedMagic、Nubia、ZTE、Xiaomi、Qualcomm 無關。

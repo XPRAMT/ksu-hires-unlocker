@@ -1,6 +1,7 @@
 # Device: Xiaomi Pad 6 Pro (liuqin), HyperOS 3 / Android 15. Sourced after common.sh by customize.sh
 # and post-fs-data.sh. ro.product.device=liuqin (OTA metadata pre-device=liuqin), model 23046RP50C.
 DEV_LABEL="Hi-Res Unlocker liuqin"
+ZIP_MODEL=XiaomiPad6Pro       # zip name: bt_hires_mixer_<ZIP_MODEL>_<version>.zip
 REQ_PROP=ro.product.device
 REQ_VAL=liuqin
 REQ_SDK=35          # Android 15 (HyperOS 3.0.7.0.VMYCNXM)
