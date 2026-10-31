@@ -18,7 +18,7 @@ No vendor file is shipped. The installer copies the device's own files, finds th
 | Device | Folder | Module id | Version | Notes |
 |---|---|---|---|---|
 | RedMagic NX809J, Android 16 | `devices/nx809j` | `bt_hires_mixer` | v0.8.0 | Tested on RedMagicOS 11.0.22. See [NX809J measurements](#nx809j-measurements). |
-| Xiaomi Pad 6 Pro (liuqin), HyperOS 3 / Android 15 | `devices/liuqin` | `bt_hires_mixer_liuqin` | v0.1.0 | No HAL patch (HIDL taro HAL). Not fully tested yet. |
+| Xiaomi Pad 6 Pro (liuqin), HyperOS 3 / Android 15 | `devices/liuqin` | `bt_hires_mixer_liuqin` | v0.8.0 | No HAL patch (HIDL taro HAL). Not fully tested yet. |
 
 The installer checks the device (`ro.product.model` / `ro.product.device`) and the Android version, and refuses anything else.
 
