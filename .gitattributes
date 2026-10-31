@@ -1,4 +1,5 @@
 * text eol=lf
+*.ps1 text eol=crlf
 *.so binary
 *.stock.so binary
 *.zip binary

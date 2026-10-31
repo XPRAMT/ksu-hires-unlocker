@@ -1,8 +1,8 @@
 *.zip
 __pycache__/
-# ROM binaries are regenerated: pull the stock lib from the phone, then run tools/patch_apm_lib.py
-system/lib64/*.so
-original/*.so.stock
-system/vendor/lib64/hw/*.so
-# generated on the phone at install time (tools/patch_config.py is the reference implementation)
+# vendor files pulled from the device, never commit them
+original/
+# generated on the device at install time
 system/
+# build output (build.py)
+dist/
