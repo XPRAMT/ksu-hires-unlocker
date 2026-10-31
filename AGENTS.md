@@ -23,7 +23,7 @@
 ## 裝置差異
 - NX809J：以 `ro.product.model=NX809J` 判斷；設定檔 `/vendor/etc/audio/sku_canoe/audio_module_config_primary.xml`（AIDL HAL 格式，port `deep_buffer_out`，sink `bt_a2dp_out` 等）；APM pattern `cmp w21,w8`；audioserver 24 bytes pattern，b.ge 在 +16；有 HAL 補丁（`libaudiocorehal.qti.so`，2 處）。
 - liuqin：以 `ro.product.device=liuqin` 判斷；設定檔 `/vendor/etc/audio/sku_cape_qssi/audio_policy_configuration.xml`（legacy 7.0 格式，port `deep_buffer`，sink `"BT A2DP Out"` 等，sources 可能在下一行）；APM pattern `cmp w22,w8`；audioserver 16 bytes 放寬 pattern，b.ge 在 +12；沒有 HAL 補丁（HIDL audio.primary.taro）。
-- liuqin 需要 KernelSU metamodule（例如 Hybrid Mount）才會掛載 `system/`；平板是 DFRoot 臨時 root，完整重開會掉 root。手動 bind mount 不可行（與 metamodule 重複，且 /data 為 nosuid 會讓 audioserver 起不來）。
+- 臨時 root（不分裝置）都需要掛載用的 metamodule（例如 Hybrid Mount）才會掛載 `system/`。liuqin 平板是 DFRoot 臨時 root，完整重開會掉 root。手動 bind mount 不可行（與 metamodule 重複，且 /data 為 nosuid 會讓 audioserver 起不來）。
 - liuqin 尚未實測：taro HAL 能否開各取樣率的 deep_buffer、44.1/88.2k 是否爆音、各 PCM 格式是否被接受。
 
 ## 建置
@@ -35,7 +35,7 @@
 - 標籤：`vX.Y.Z`，一個 release 附所有裝置的 zip（`<模組 id>-vX.Y.Z.zip`）。不再使用 `nx809j-v…` / `liuqin-v…`。
 - 流程：寫好 `RELEASE_NOTES.md`（繁中、英文兩節，不能留 TODO）→ `.\release.ps1 -DryRun` → `.\release.ps1`。腳本 `tools/release.py`：檢查 main、乾淨、與 origin 同步、標籤未用 → 寫入各 module.prop → build.py → 驗證 zip（必要檔案、版本、無廠商檔、無 CRLF）→ 產生 `dist/release-notes-vX.Y.Z.md` → commit「Release vX.Y.Z」→ tag → push → gh release create（Latest）。-DryRun 會還原 module.prop，不 commit、不 tag、不 push。
 - 裝置從 `devices/*/`（有 device.sh 與 module.prop）自動找，新增裝置不用改腳本。
-- 舊標籤（從 RedMagicX 轉來，名稱不變）：`hires-mixer-v0.7.0`（commit `38543d2`）、`hires-mixer-v0.8.0`（commit `ca388fd`，目前 Latest）。v0.8.0 另附 liuqin v0.1.0 的 zip。
+- 舊標籤（從 RedMagicX 轉來，名稱不變）：`hires-mixer-v0.7.0`（commit `38543d2`）、`hires-mixer-v0.8.0`（commit `ca388fd`，目前 Latest）。v0.8.0 另附 liuqin v0.1.0 的 zip；說明已註明臨時 root 需要 Hybrid Mount 這類掛載模組。
 - RedMagicX 已沒有模組的 release 與檔案，README 只留連到本儲存庫的連結。
 
 ## 規則

@@ -18,14 +18,14 @@ zip 內不含任何廠商檔案。安裝程式複製裝置自己的檔案，依�
 | 裝置 | 資料夾 | 模組 id | 版本 | 備註 |
 |---|---|---|---|---|
 | RedMagic NX809J，Android 16 | `devices/nx809j` | `bt_hires_mixer` | v0.8.0 | 在 RedMagicOS 11.0.22 測試。見 [NX809J 實測](#nx809j-實測)。 |
-| Xiaomi Pad 6 Pro（liuqin），HyperOS 3 / Android 15 | `devices/liuqin` | `bt_hires_mixer_liuqin` | v0.1.0 | 沒有 HAL 補丁（HIDL taro HAL）。需要 KernelSU metamodule。尚未完整實測。 |
+| Xiaomi Pad 6 Pro（liuqin），HyperOS 3 / Android 15 | `devices/liuqin` | `bt_hires_mixer_liuqin` | v0.1.0 | 沒有 HAL 補丁（HIDL taro HAL）。尚未完整實測。 |
 
 安裝程式會檢查裝置（`ro.product.model` / `ro.product.device`）與 Android 版本，不符就拒絕安裝。
 
 ## 需求
 
 - KernelSU（或可執行 KernelSU 模組的 root 管理器）。
-- **liuqin：** 需要會掛載模組檔案的 KernelSU metamodule，例如 Hybrid Mount。KernelSU v3 起不再自行掛載 `system/`；沒有 metamodule 時只會執行 `post-fs-data.sh`。
+- 使用臨時 root 時（不分裝置），請安裝掛載用的 metamodule，例如 Hybrid Mount。沒有的話 `system/` 下的模組檔案不會被掛載，只會執行 `post-fs-data.sh`。
 
 ## 安裝
 
