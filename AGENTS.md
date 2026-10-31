@@ -30,9 +30,10 @@
 - 自測：`tools/selftest/run.sh nx809j dist/bt_hires_mixer-v0.8.0.zip`（需要 bash、awk、od、dd、unzip）。
 
 ## 發布
-- 標籤：`nx809j-vX.Y.Z`、`liuqin-vX.Y.Z`，每個 release 只附該裝置的 zip。
-- 舊版 NX809J release（標籤 `hires-mixer-v0.8.0` 等，附件 `bt_hires_mixer_v0.8.0.zip`）留在 RedMagicX 儲存庫，不搬移。
-- 本儲存庫尚未發布任何 release。
+- 舊標籤（從 RedMagicX 轉來，名稱不變）：`hires-mixer-v0.7.0`（commit `38543d2`）、`hires-mixer-v0.8.0`（commit `ca388fd`，Latest），附件 `bt_hires_mixer_vX.Y.Z.zip` 與 RedMagicX 上的原檔相同。
+- 之後的標籤：`nx809j-vX.Y.Z`、`liuqin-vX.Y.Z`，每個 release 只附該裝置的 zip（`dist/<模組 id>-<version>.zip`）。
+- RedMagicX 仍保留舊的兩個 release 與標籤；要不要刪除由使用者決定。
+- RedMagicX 的 README 只留連到本儲存庫的連結；詳細說明與實測數據放在本儲存庫的 README。
 
 ## 規則
 - 改版時同步更新 `module.prop`（version、versionCode），installer 的版本字串由 module.prop 讀取。
