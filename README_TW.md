@@ -15,7 +15,7 @@ zip 內不含任何廠商檔案。安裝程式複製裝置自己的檔案，依�
 
 | 裝置 | 資料夾 | 模組 id | 版本 | 備註 |
 |---|---|---|---|---|
-| RedMagic NX809J，Android 16 | `devices/nx809j` | `bt_hires_mixer` | v0.8.0 | 在 RedMagicOS 11.0.22 測試。實測數據見 [RedMagicX README](https://github.com/XPRAMT/RedMagicX/blob/main/README_TW.md)。 |
+| RedMagic NX809J，Android 16 | `devices/nx809j` | `bt_hires_mixer` | v0.8.0 | 在 RedMagicOS 11.0.22 測試。實測數據見 [RedMagicX README](https://github.com/XPRAMT/RedMagicX/blob/master/README_TW.md#kernelsu-模組高取樣率解鎖)。 |
 | Xiaomi Pad 6 Pro（liuqin），HyperOS 3 / Android 15 | `devices/liuqin` | `bt_hires_mixer_liuqin` | v0.1.0 | 沒有 HAL 補丁（HIDL taro HAL）。需要 KernelSU metamodule。尚未完整實測。 |
 
 安裝程式會檢查裝置（`ro.product.model` / `ro.product.device`）與 Android 版本，不符就拒絕安裝。
