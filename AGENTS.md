@@ -14,6 +14,7 @@
 - `common/lib.sh`：find_pat、patch_at、stock_sha（zip 內叫 `common.sh`）。
 - `common/customize.sh`：安裝程式（裝置檢查、build_lib、備份與產生 XML、guard.conf、權限）。
 - `common/post-fs-data.sh`：開機檢查；原廠檔改變就 skip_mount，否則設 `ro.audio.flinger_standbytime_ms`。
+- `common/service.sh`：軟重啟自動重載。等覆蓋檔可見（cmp 模組副本與實際 XML、APM，最多 90 秒，不分掛載模組）與 sys.boot_completed；以 /proc/<pid>/maps 的 inode（不比 dev，overlay 的 dev 與 maps 不同）與 /proc/<pid>/exe 判斷行程是否仍用原廠檔；過期就 `setprop ctl.restart` HAL（若有）再 audioserver，每次開機一次（post-fs-data 寫 `.boot` token，service.sh 寫 `.reloaded`；軟重啟 boot_id 不變所以不用它）。紀錄 `$MODDIR/service.log`。device.sh 提供 RELOAD_HAL_SVC/RELOAD_HAL_BIN/RELOAD_HAL_LIB：NX809J `vendor.audio-hal-aidl`（/vendor/bin/hw/audiohalservice.qti，須映射 libaudiocorehal.qti.so）；liuqin 留空（legacy XML 由 audioserver 讀，HIDL HAL `vendor.audio-hal` = android.hardware.audio.service_64 沒有補丁），只檢查／重啟 audioserver。2026-11-01 實機唯讀驗證：NX809J 軟重啟後 HAL 與 audioserver 皆映射原廠檔（判為過期），liuqin 正常。尚未實機安裝測試。
 - `devices/<裝置>/device.sh`：REQ_PROP/REQ_VAL/REQ_SDK、XML 路徑與備份檔名、補丁 pattern、HAS_HAL、AS_SKIP、`gen_xml`（設定檔格式不同，各自實作）。
 - `devices/<裝置>/module.prop`、`devices/<裝置>/tools/*.py`（PC 端參考實作，會一起打包進 zip 的 `tools/`）。
 - `build.py`（`build.ps1`、`build.sh` 只是包裝）→ `dist/bt_hires_mixer_<ZIP_MODEL>_<version>.zip`（ZIP_MODEL 寫在各 device.sh：nx809j → NX809J、liuqin → XiaomiPad6Pro；模組 id 不變）。zip 為扁平結構、LF、固定時間戳。

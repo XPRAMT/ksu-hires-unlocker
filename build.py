@@ -10,6 +10,7 @@ Zip layout (flat, LF line endings):
   device.sh              devices/<device>/device.sh
   customize.sh           common/customize.sh
   post-fs-data.sh        common/post-fs-data.sh
+  service.sh             common/service.sh
   tools/*.py             devices/<device>/tools/*.py (PC reference implementations)
 """
 import os
@@ -55,6 +56,7 @@ def build(device):
         ("device.sh", read(os.path.join(ddir, "device.sh"))),
         ("customize.sh", read(os.path.join(ROOT, "common", "customize.sh"))),
         ("post-fs-data.sh", read(os.path.join(ROOT, "common", "post-fs-data.sh"))),
+        ("service.sh", read(os.path.join(ROOT, "common", "service.sh"))),
     ]
     tdir = os.path.join(ddir, "tools")
     if os.path.isdir(tdir):

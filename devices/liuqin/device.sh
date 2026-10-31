@@ -43,6 +43,10 @@ AS_NEW_OCT='\002\000\000\024'
 AS_SKIP=12
 STANDBY_MS=500      # ro.audio.flinger_standbytime_ms applied at boot
 
+# service.sh soft-reboot reload: the legacy XML and the patched files are all used by audioserver, the
+# HIDL HAL (vendor.audio-hal) has nothing patched, so only audioserver is checked and restarted.
+RELOAD_HAL_SVC=
+
 # gen_xml <stock xml> <out xml>: legacy audio_policy_configuration.xml (version 7.0). One DEEP_BUFFER
 # mix port per sample rate, used by the Bluetooth A2DP sinks (44.1/48/88.2/96 kHz) and by the wired
 # headphone and USB audio sinks (additionally 176.4/192 kHz). Same output as tools/patch_config.py.

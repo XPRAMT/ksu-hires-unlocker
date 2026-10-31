@@ -27,6 +27,7 @@ The installer checks the device (`ro.product.model` / `ro.product.device`) and t
 - KernelSU (or a compatible root manager running KernelSU modules).
 - KernelSU always needs a mount metamodule such as Hybrid Mount (permanent and temporary root alike). The module only works when that metamodule actually mounts; otherwise the files under `system/` are not applied and only `post-fs-data.sh` runs.
 - Troubleshooting: if hi-res doesn't work (e.g. USB/BT stuck at 48 kHz), first check the mount module's status page/logs. E.g. Hybrid Mount 6.2.5 mounts nothing if `/data/adb/hybrid-mount/config.toml` contains old-version fields (`enable_overlay_fallback`, `[kasumi]` tables): back it up, replace it with the module's bundled default config, then reboot. Quick check on NX809J: `grep -c deep_buffer_rate /vendor/etc/audio/sku_canoe/audio_module_config_primary.xml` should be > 0.
+- Soft-reboot auto-reload: on a KernelSU soft reboot the audio HAL / audioserver may start before the mount module and keep the stock files (stuck at 48 kHz). `service.sh` checks after boot that the overlay is mounted and, if an audio process still maps the stock files, restarts the audio HAL and audioserver once (at most once per boot; nothing is done on a normal cold boot or when the mount failed). Log: `service.log` in the module folder.
 
 ## Install
 

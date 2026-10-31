@@ -47,6 +47,11 @@ AS_NEW_OCT='\002\000\000\024'
 AS_SKIP=16
 STANDBY_MS=500      # ro.audio.flinger_standbytime_ms applied at boot
 
+# service.sh soft-reboot reload: init service of the AIDL audio HAL and the patched library it must map
+RELOAD_HAL_SVC=vendor.audio-hal-aidl
+RELOAD_HAL_BIN=audiohalservice.qti
+RELOAD_HAL_LIB=$HAL
+
 # gen_xml <stock xml> <out xml>: one DEEP_BUFFER mix port per sample rate, used by the Bluetooth A2DP
 # sinks (44.1/48/88.2/96 kHz) and by the wired headphone and USB audio sinks (additionally 176.4/192 kHz).
 gen_xml() {

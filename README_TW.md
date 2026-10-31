@@ -27,6 +27,7 @@ zip 內不含任何廠商檔案。安裝程式複製裝置自己的檔案，依�
 - KernelSU（或可執行 KernelSU 模組的 root 管理器）。
 - KernelSU 一律需要掛載用的 metamodule，例如 Hybrid Mount（永久 root 與臨時 root 都一樣）。只有在 metamodule 實際掛載成功時本模組才會生效，否則 `system/` 下的檔案不會套用，只會執行 `post-fs-data.sh`。
 - 疑難排解：高取樣率沒生效（例如 USB／藍牙卡在 48 kHz）時，先看掛載模組的狀態頁或紀錄。例如 Hybrid Mount 6.2.5 若 `/data/adb/hybrid-mount/config.toml` 含舊版欄位（`enable_overlay_fallback`、`[kasumi]` 區段）會整個不掛載：先備份，換成模組附的預設設定檔，再重新開機。NX809J 快速確認：`grep -c deep_buffer_rate /vendor/etc/audio/sku_canoe/audio_module_config_primary.xml` 應大於 0。
+- 軟重啟自動重載：KernelSU 軟重啟時音訊 HAL／audioserver 可能比掛載模組早啟動，仍用原廠檔案（卡在 48 kHz）。`service.sh` 會在開機完成後確認覆蓋檔已掛上，若音訊行程仍映射原廠檔案，就重啟一次音訊 HAL 與 audioserver（每次開機最多一次；正常冷開機或掛載沒成功時不做任何事）。紀錄在模組資料夾的 `service.log`。
 
 ## 安裝
 

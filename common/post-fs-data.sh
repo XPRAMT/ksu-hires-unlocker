@@ -19,6 +19,7 @@ if [ "$ok" = 1 ]; then
 fi
 if [ "$ok" = 1 ]; then
   rm -f "$MODDIR/skip_mount"
+  echo "$(date +%s)-$$" > "$MODDIR/.boot"   # per-boot token for service.sh (soft reboot keeps boot_id)
   RP=$(command -v resetprop || echo /data/adb/ksu/bin/resetprop)
   "$RP" -n ro.audio.flinger_standbytime_ms "$STANDBY_MS"      # read by audioserver when it starts
 else

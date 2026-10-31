@@ -22,7 +22,7 @@ import build  # noqa: E402  (zip naming shared with build.py)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPO = "XPRAMT/ksu-hires-unlocker"
-REQUIRED = ("module.prop", "common.sh", "device.sh", "customize.sh", "post-fs-data.sh")
+REQUIRED = ("module.prop", "common.sh", "device.sh", "customize.sh", "post-fs-data.sh", "service.sh")
 ALLOWED_EXT = (".sh", ".prop", ".py")       # anything else in a zip (.so, .xml, binaries) is refused
 
 
