@@ -23,7 +23,7 @@
 ## 裝置差異
 - NX809J：以 `ro.product.model=NX809J` 判斷；設定檔 `/vendor/etc/audio/sku_canoe/audio_module_config_primary.xml`（AIDL HAL 格式，port `deep_buffer_out`，sink `bt_a2dp_out` 等）；APM pattern `cmp w21,w8`；audioserver 24 bytes pattern，b.ge 在 +16；有 HAL 補丁（`libaudiocorehal.qti.so`，2 處）。
 - liuqin：以 `ro.product.device=liuqin` 判斷；設定檔 `/vendor/etc/audio/sku_cape_qssi/audio_policy_configuration.xml`（legacy 7.0 格式，port `deep_buffer`，sink `"BT A2DP Out"` 等，sources 可能在下一行）；APM pattern `cmp w22,w8`；audioserver 16 bytes 放寬 pattern，b.ge 在 +12；沒有 HAL 補丁（HIDL audio.primary.taro）。
-- 臨時 root（不分裝置）都需要掛載用的 metamodule（例如 Hybrid Mount）才會掛載 `system/`。liuqin 平板是 DFRoot 臨時 root，完整重開會掉 root。手動 bind mount 不可行（與 metamodule 重複，且 /data 為 nosuid 會讓 audioserver 起不來）。
+- KernelSU 不分永久／臨時 root 都需要掛載用的 metamodule（例如 Hybrid Mount），且須實際掛載成功才會套用 `system/`（2026-11-01 NX809J 實證：Hybrid Mount 6.2.5 因舊版 config.toml 欄位解析失敗時，post-fs-data 有跑但覆蓋檔全沒套用）。liuqin 平板是 DFRoot 臨時 root，完整重開會掉 root。手動 bind mount 不可行（與 metamodule 重複，且 /data 為 nosuid 會讓 audioserver 起不來）。
 - liuqin 尚未實測：taro HAL 能否開各取樣率的 deep_buffer、44.1/88.2k 是否爆音、各 PCM 格式是否被接受。
 
 ## 建置

@@ -25,7 +25,8 @@ zip 內不含任何廠商檔案。安裝程式複製裝置自己的檔案，依�
 ## 需求
 
 - KernelSU（或可執行 KernelSU 模組的 root 管理器）。
-- 使用臨時 root 時（不分裝置），請安裝掛載用的 metamodule，例如 Hybrid Mount。沒有的話 `system/` 下的模組檔案不會被掛載，只會執行 `post-fs-data.sh`。
+- KernelSU 一律需要掛載用的 metamodule，例如 Hybrid Mount（永久 root 與臨時 root 都一樣）。只有在 metamodule 實際掛載成功時本模組才會生效，否則 `system/` 下的檔案不會套用，只會執行 `post-fs-data.sh`。
+- 疑難排解：高取樣率沒生效（例如 USB／藍牙卡在 48 kHz）時，先看掛載模組的狀態頁或紀錄。例如 Hybrid Mount 6.2.5 若 `/data/adb/hybrid-mount/config.toml` 含舊版欄位（`enable_overlay_fallback`、`[kasumi]` 區段）會整個不掛載：先備份，換成模組附的預設設定檔，再重新開機。NX809J 快速確認：`grep -c deep_buffer_rate /vendor/etc/audio/sku_canoe/audio_module_config_primary.xml` 應大於 0。
 
 ## 安裝
 

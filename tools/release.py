@@ -167,9 +167,9 @@ def main():
         if not mz or not me or not mz.group(1).strip() or not me.group(1).strip():
             fail("RELEASE_NOTES.md needs a '## 繁體中文' section followed by a '## English' section")
         rows_tw = "\n".join("| %s | `%s` | `%s` |" % (d, expected[d][0], os.path.basename(expected[d][1])) for d in devs)
-        notes = ("## 繁體中文\n\n" + mz.group(1).strip() + "\n\n### 下載\n\n每台裝置一個 zip，請下載自己裝置的那一個，在 KernelSU 管理器安裝後重新開機。使用臨時 root 時，請先安裝掛載用的 metamodule，例如 Hybrid Mount。\n\n"
+        notes = ("## 繁體中文\n\n" + mz.group(1).strip() + "\n\n### 下載\n\n每台裝置一個 zip，請下載自己裝置的那一個，在 KernelSU 管理器安裝後重新開機。KernelSU 一律需要掛載用的 metamodule，例如 Hybrid Mount（永久與臨時 root 皆同），且須實際掛載成功模組才會生效。\n\n"
                  "| 裝置 | 模組 id | 檔案 |\n|---|---|---|\n" + rows_tw + "\n\n---\n\n"
-                 "## English\n\n" + me.group(1).strip() + "\n\n### Downloads\n\nOne zip per device: download the one for your device, install it in the KernelSU manager and reboot. When using temporary root, install a mount metamodule such as Hybrid Mount first.\n\n"
+                 "## English\n\n" + me.group(1).strip() + "\n\n### Downloads\n\nOne zip per device: download the one for your device, install it in the KernelSU manager and reboot. KernelSU always needs a mount metamodule such as Hybrid Mount (permanent and temporary root alike), and the module only works when it mounts successfully.\n\n"
                  "| Device | Module id | File |\n|---|---|---|\n" + rows_tw + "\n")
         notes_path = os.path.join(dist, "release-notes-%s.md" % tag)
         wr(notes_path, notes)
