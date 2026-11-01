@@ -3,13 +3,13 @@
 
 usage: python tools/release.py [--dry-run]
 
-Version: the root VERSION file (X.Y.Z). Every devices/*/module.prop gets version=vX.Y.Z and
-versionCode=X*10000+Y*100+Z. Tag and release: vX.Y.Z.
+Version: only the root VERSION file (X.Y.Z); build.py writes version=vX.Y.Z and
+versionCode=X*10000+Y*100+Z into each zipped module.prop. Tag and release: vX.Y.Z (on the current HEAD).
 
 Steps: checks (branch main, clean worktree, in sync with origin/main, tag not used, versionCode
-increases, gh logged in) -> write module.prop -> build.py -> verify every zip -> release notes from
-RELEASE_NOTES.md -> commit "Release vX.Y.Z" -> annotated tag -> push main and tag -> gh release create.
---dry-run stops after the release notes and restores module.prop (nothing is committed, tagged or pushed).
+increases over every existing vX.Y.Z tag, gh logged in) -> build.py -> verify every zip -> release
+notes from RELEASE_NOTES.md -> annotated tag -> push tag -> gh release create.
+--dry-run stops after the release notes (nothing is tagged or pushed).
 """
 import io
 import os
@@ -67,15 +67,7 @@ def main():
         fail("unknown argument: " + " ".join(unknown))
     print("== %s" % ("DRY RUN (build and verify only)" if dry else "RELEASE"))
 
-    ver = rd(os.path.join(ROOT, "VERSION")).strip()
-    m = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)", ver)
-    if not m:
-        fail("VERSION must be X.Y.Z, got %r" % ver)
-    x, y, z = map(int, m.groups())
-    if y > 99 or z > 99:
-        fail("minor and patch must be 0..99 (versionCode = X*10000+Y*100+Z)")
-    code = x * 10000 + y * 100 + z
-    tag = "v" + ver
+    tag, code = build.version()
     print("version %s, versionCode %d, tag %s" % (tag, code, tag))
 
     # --- repository checks
@@ -106,88 +98,70 @@ def main():
         fail("no device in devices/")
     print("devices: " + ", ".join(devs))
 
-    # --- version into module.prop
-    saved = {}
+    # --- versionCode must increase over every released vX.Y.Z (legacy hires-mixer-v0.x used versionCode <= 11)
+    for t in run("git", "tag", "-l", "v*").split():
+        mt = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", t)
+        if mt and int(mt.group(1)) * 10000 + int(mt.group(2)) * 100 + int(mt.group(3)) >= code:
+            fail("versionCode %d is not greater than tag %s (raise VERSION)" % (code, t))
+    if code <= 11:
+        fail("versionCode %d must be greater than 11 (v0.8.0)" % code)
+
+    # --- build
+    dist = os.path.join(ROOT, "dist")
+    expected = {}
     for d in devs:
-        p = os.path.join(ROOT, "devices", d, "module.prop")
-        t = rd(p)
-        saved[p] = t
-        old = int(prop(t, "versionCode"))
-        if code <= old:
-            fail("%s: versionCode %d must be greater than the current %d (raise VERSION)" % (d, code, old))
-        t = re.sub(r"^version=.*$", "version=" + tag, t, count=1, flags=re.M)
-        t = re.sub(r"^versionCode=.*$", "versionCode=%d" % code, t, count=1, flags=re.M)
-        wr(p, t)
-        print("  %s: versionCode %d -> %d" % (d, old, code))
+        mod_id = prop(rd(os.path.join(ROOT, "devices", d, "module.prop")), "id")
+        model = build.zip_model(open(os.path.join(ROOT, "devices", d, "device.sh"), "rb").read())
+        expected[d] = (mod_id, os.path.join(dist, build.zip_name(model, tag)))
+        if os.path.exists(expected[d][1]):
+            os.remove(expected[d][1])
+    run(sys.executable, os.path.join(ROOT, "build.py"), *devs)
 
-    def restore():
-        for p, t in saved.items():
-            wr(p, t)
+    # --- verify
+    for d in devs:
+        mod_id, path = expected[d]
+        if not os.path.isfile(path):
+            fail("%s: %s was not built" % (d, os.path.relpath(path, ROOT)))
+        with zipfile.ZipFile(path) as zf:
+            names = zf.namelist()
+            for r in REQUIRED:
+                if r not in names:
+                    fail("%s: %s missing in the zip" % (d, r))
+            for n in names:
+                if n.startswith(("system/", "original/")) or not n.endswith(ALLOWED_EXT):
+                    fail("%s: unexpected file in the zip (vendor file?): %s" % (d, n))
+                if b"\r" in zf.read(n):
+                    fail("%s: CRLF in %s" % (d, n))
+            mp = zf.read("module.prop").decode("utf-8")
+            if prop(mp, "id") != mod_id or prop(mp, "version") != tag or prop(mp, "versionCode") != str(code):
+                fail("%s: module.prop in the zip does not match (id/version/versionCode)" % d)
+        print("  verified %s (%d files, %d bytes)" % (os.path.relpath(path, ROOT), len(names), os.path.getsize(path)))
 
-    try:
-        # --- build
-        dist = os.path.join(ROOT, "dist")
-        expected = {}
-        for d in devs:
-            mod_id = prop(saved[os.path.join(ROOT, "devices", d, "module.prop")], "id")
-            model = build.zip_model(open(os.path.join(ROOT, "devices", d, "device.sh"), "rb").read())
-            expected[d] = (mod_id, os.path.join(dist, build.zip_name(model, tag)))
-            if os.path.exists(expected[d][1]):
-                os.remove(expected[d][1])
-        run(sys.executable, os.path.join(ROOT, "build.py"), *devs)
+    # --- release notes
+    src = re.sub(r"<!--.*?-->", "", rd(os.path.join(ROOT, "RELEASE_NOTES.md")), flags=re.S)
+    if "TODO" in src:
+        if not dry:
+            fail("RELEASE_NOTES.md still contains TODO")
+        print("  warning: RELEASE_NOTES.md still contains TODO (a real release would stop here)")
+    mz = re.search(r"^## 繁體中文\s*\n(.*?)(?=^## English)", src, re.S | re.M)
+    me = re.search(r"^## English\s*\n(.*)", src, re.S | re.M)
+    if not mz or not me or not mz.group(1).strip() or not me.group(1).strip():
+        fail("RELEASE_NOTES.md needs a '## 繁體中文' section followed by a '## English' section")
+    rows_tw = "\n".join("| %s | `%s` | `%s` |" % (d, expected[d][0], os.path.basename(expected[d][1])) for d in devs)
+    notes = ("## 繁體中文\n\n" + mz.group(1).strip() + "\n\n### 下載\n\n每台裝置一個 zip，請下載自己裝置的那一個，在 KernelSU 管理器安裝後重新開機。KernelSU 一律需要掛載用的 metamodule，例如 Hybrid Mount（永久與臨時 root 皆同），且須實際掛載成功模組才會生效。\n\n"
+             "| 裝置 | 模組 id | 檔案 |\n|---|---|---|\n" + rows_tw + "\n\n---\n\n"
+             "## English\n\n" + me.group(1).strip() + "\n\n### Downloads\n\nOne zip per device: download the one for your device, install it in the KernelSU manager and reboot. KernelSU always needs a mount metamodule such as Hybrid Mount (permanent and temporary root alike), and the module only works when it mounts successfully.\n\n"
+             "| Device | Module id | File |\n|---|---|---|\n" + rows_tw + "\n")
+    notes_path = os.path.join(dist, "release-notes-%s.md" % tag)
+    wr(notes_path, notes)
+    print("  release notes: %s" % os.path.relpath(notes_path, ROOT))
 
-        # --- verify
-        for d in devs:
-            mod_id, path = expected[d]
-            if not os.path.isfile(path):
-                fail("%s: %s was not built" % (d, os.path.relpath(path, ROOT)))
-            with zipfile.ZipFile(path) as zf:
-                names = zf.namelist()
-                for r in REQUIRED:
-                    if r not in names:
-                        fail("%s: %s missing in the zip" % (d, r))
-                for n in names:
-                    if n.startswith(("system/", "original/")) or not n.endswith(ALLOWED_EXT):
-                        fail("%s: unexpected file in the zip (vendor file?): %s" % (d, n))
-                    if b"\r" in zf.read(n):
-                        fail("%s: CRLF in %s" % (d, n))
-                mp = zf.read("module.prop").decode("utf-8")
-                if prop(mp, "id") != mod_id or prop(mp, "version") != tag or prop(mp, "versionCode") != str(code):
-                    fail("%s: module.prop in the zip does not match (id/version/versionCode)" % d)
-            print("  verified %s (%d files, %d bytes)" % (os.path.relpath(path, ROOT), len(names), os.path.getsize(path)))
+    if dry:
+        print("== dry run ok: nothing tagged or pushed")
+        return
 
-        # --- release notes
-        src = re.sub(r"<!--.*?-->", "", rd(os.path.join(ROOT, "RELEASE_NOTES.md")), flags=re.S)
-        if "TODO" in src:
-            if not dry:
-                fail("RELEASE_NOTES.md still contains TODO")
-            print("  warning: RELEASE_NOTES.md still contains TODO (a real release would stop here)")
-        mz = re.search(r"^## 繁體中文\s*\n(.*?)(?=^## English)", src, re.S | re.M)
-        me = re.search(r"^## English\s*\n(.*)", src, re.S | re.M)
-        if not mz or not me or not mz.group(1).strip() or not me.group(1).strip():
-            fail("RELEASE_NOTES.md needs a '## 繁體中文' section followed by a '## English' section")
-        rows_tw = "\n".join("| %s | `%s` | `%s` |" % (d, expected[d][0], os.path.basename(expected[d][1])) for d in devs)
-        notes = ("## 繁體中文\n\n" + mz.group(1).strip() + "\n\n### 下載\n\n每台裝置一個 zip，請下載自己裝置的那一個，在 KernelSU 管理器安裝後重新開機。KernelSU 一律需要掛載用的 metamodule，例如 Hybrid Mount（永久與臨時 root 皆同），且須實際掛載成功模組才會生效。\n\n"
-                 "| 裝置 | 模組 id | 檔案 |\n|---|---|---|\n" + rows_tw + "\n\n---\n\n"
-                 "## English\n\n" + me.group(1).strip() + "\n\n### Downloads\n\nOne zip per device: download the one for your device, install it in the KernelSU manager and reboot. KernelSU always needs a mount metamodule such as Hybrid Mount (permanent and temporary root alike), and the module only works when it mounts successfully.\n\n"
-                 "| Device | Module id | File |\n|---|---|---|\n" + rows_tw + "\n")
-        notes_path = os.path.join(dist, "release-notes-%s.md" % tag)
-        wr(notes_path, notes)
-        print("  release notes: %s" % os.path.relpath(notes_path, ROOT))
-
-        if dry:
-            restore()
-            print("== dry run ok: module.prop restored, nothing committed, tagged or pushed")
-            return
-
-        # --- commit, tag, push, release
-        run("git", "add", "--", *saved.keys())
-        run("git", "commit", "-q", "-m", "Release %s" % tag)
-    except SystemExit:
-        restore()
-        raise
+    # --- tag, push, release
     run("git", "tag", "-a", tag, "-m", "Hi-Res Unlocker %s" % tag)
-    run("git", "push", "-q", "origin", "main")
     run("git", "push", "-q", "origin", tag)
     url = run("gh", "release", "create", tag, *[expected[d][1] for d in devs], "-R", REPO, "--verify-tag",
               "--title", "Hi-Res Unlocker %s" % tag, "-F", notes_path, "--latest")

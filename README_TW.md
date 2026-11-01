@@ -87,7 +87,7 @@ AOSP 的這個取樣率判斷已回報上游：[Issue Tracker 578577149](https:/
 ./build.sh
 ```
 
-輸出：`dist/bt_hires_mixer_<ZIP_MODEL>_<version>.zip`，例如 `dist/bt_hires_mixer_NX809J_v0.8.0.zip`。
+輸出：`dist/bt_hires_mixer_<ZIP_MODEL>_<version>.zip`，例如 `dist/bt_hires_mixer_NX809J_v0.9.0.zip`。版本只來自 `VERSION`，建置時寫進 zip 內的 `module.prop`。
 
 ### 發布
 

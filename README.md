@@ -87,7 +87,7 @@ Needs Python 3.
 ./build.sh
 ```
 
-Output: `dist/bt_hires_mixer_<ZIP_MODEL>_<version>.zip`, for example `dist/bt_hires_mixer_NX809J_v0.8.0.zip`.
+Output: `dist/bt_hires_mixer_<ZIP_MODEL>_<version>.zip`, for example `dist/bt_hires_mixer_NX809J_v0.9.0.zip`. The version comes only from `VERSION` and is written into the zipped `module.prop` at build time.
 
 ### Release
 
@@ -95,7 +95,7 @@ The version is in `VERSION` (X.Y.Z, shared by every device; versionCode = X*1000
 
 ```powershell
 .\release.ps1 -DryRun   # build and verify only
-.\release.ps1           # commit the version, tag vX.Y.Z, push, create the GitHub release with every zip
+.\release.ps1           # tag vX.Y.Z on HEAD, push the tag, create the GitHub release with every zip
 ```
 
 Smoke test on Linux, no device needed: `tools/selftest/run.sh nx809j dist/bt_hires_mixer_NX809J_v0.8.0.zip`.

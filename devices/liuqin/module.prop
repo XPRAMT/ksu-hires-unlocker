@@ -1,6 +1,4 @@
 id=bt_hires_mixer_liuqin
 name=Hi-Res Unlocker (Xiaomi Pad 6 Pro liuqin)
-version=v0.8.0
-versionCode=11
 author=XPRAMT
 description=Hi-res mixer for Xiaomi Pad 6 Pro (liuqin, HyperOS 3 / Android 15): per-rate deep-buffer mix ports for Bluetooth A2DP, wired headphones and USB audio, an audio policy patch so every track picks the port with its own rate, and an audioserver patch plus a 0.5 s standby delay so a track with a different sample rate starts sooner. Port of the NX809J module (no HAL patch: this device uses the HIDL audio.primary.taro HAL). The patched libraries and the config are built on the tablet at install time from its own files.

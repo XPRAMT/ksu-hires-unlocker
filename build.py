@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Build one KernelSU module zip per device: dist/bt_hires_mixer_<ZIP_MODEL>_v<version>.zip
 (ZIP_MODEL is set in devices/<device>/device.sh, e.g. NX809J, XiaomiPad6Pro).
+The version comes only from the root VERSION file (X.Y.Z): version=vX.Y.Z and
+versionCode=X*10000+Y*100+Z are written into the zipped module.prop (tracked files are not changed).
 
 usage: python build.py [device ...]      (default: every folder in devices/)
 
 Zip layout (flat, LF line endings):
-  module.prop            devices/<device>/module.prop
+  module.prop            devices/<device>/module.prop + version/versionCode from VERSION
   common.sh              common/lib.sh
   device.sh              devices/<device>/device.sh
   customize.sh           common/customize.sh
@@ -46,10 +48,31 @@ def zip_name(model, version):
     return "bt_hires_mixer_%s_%s.zip" % (model, version)
 
 
+def version():
+    """(tag, versionCode) from the root VERSION file."""
+    ver = read(os.path.join(ROOT, "VERSION")).decode("utf-8").strip()
+    m = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)", ver)
+    if not m:
+        raise SystemExit("VERSION must be X.Y.Z, got %r" % ver)
+    x, y, z = map(int, m.groups())
+    if y > 99 or z > 99:
+        raise SystemExit("VERSION: minor and patch must be 0..99 (versionCode = X*10000+Y*100+Z)")
+    return "v" + ver, x * 10000 + y * 100 + z
+
+
+def stamp(mp, tag, code):
+    """module.prop with version/versionCode (from VERSION) right after name=."""
+    if re.search(rb"^version(Code)?=", mp, re.M):
+        raise SystemExit("module.prop must not contain version/versionCode (they come from VERSION)")
+    return re.sub(rb"^(name=.*\n)", lambda m: m.group(1) + b"version=%s\nversionCode=%d\n" % (tag.encode(), code),
+                  mp, count=1, flags=re.M)
+
+
 def build(device):
     ddir = os.path.join(ROOT, "devices", device)
-    mp = read(os.path.join(ddir, "module.prop"))
-    mod_id, version = prop(mp, "id"), prop(mp, "version")
+    version, code = globals()["version"]()
+    mp = stamp(read(os.path.join(ddir, "module.prop")), version, code)
+    mod_id = prop(mp, "id")
     files = [
         ("module.prop", mp),
         ("common.sh", read(os.path.join(ROOT, "common", "lib.sh"))),
