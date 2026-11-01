@@ -95,7 +95,7 @@ AOSP 的這個取樣率判斷已回報上游：[Issue Tracker 578577149](https:/
 
 ```powershell
 .\release.ps1 -DryRun   # 只打包與驗證
-.\release.ps1           # commit 版本、打 vX.Y.Z 標籤、push、建立附所有 zip 的 GitHub release
+.\release.ps1           # 在 HEAD 打 vX.Y.Z 標籤、push 標籤、建立附所有 zip 的 GitHub release
 ```
 
 在 Linux 上不需裝置的自測：`tools/selftest/run.sh nx809j dist/bt_hires_mixer_NX809J_v0.8.0.zip`。
