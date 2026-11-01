@@ -7,8 +7,8 @@
 
 | 裝置 | 資料夾 | 模組 id | 版本 | 原廠備份 |
 |---|---|---|---|---|
-| RedMagic NX809J，Android 16（SDK 36） | `devices/nx809j` | `bt_hires_mixer` | 已發布 v0.8.0（versionCode 11）；main 為 v0.9.0（900） | `/data/adb/bt_hires_mixer_stock/` |
-| Xiaomi Pad 6 Pro liuqin，HyperOS 3 / Android 15（SDK 35） | `devices/liuqin` | `bt_hires_mixer_liuqin` | 已發布 v0.8.0（versionCode 11，功能與 NX809J 相同，但沒有 HAL 補丁）；main 為 v0.9.0（900） | `/data/adb/bt_hires_mixer_liuqin_stock/` |
+| RedMagic NX809J，Android 16（SDK 36） | `devices/nx809j` | `bt_hires_mixer` | v0.9.0（versionCode 900，已發布） | `/data/adb/bt_hires_mixer_stock/` |
+| Xiaomi Pad 6 Pro liuqin，HyperOS 3 / Android 15（SDK 35） | `devices/liuqin` | `bt_hires_mixer_liuqin` | v0.9.0（versionCode 900，已發布；功能與 NX809J 相同，但沒有 HAL 補丁，service.sh 只管 audioserver，平板未實測） | `/data/adb/bt_hires_mixer_liuqin_stock/` |
 
 ## 結構
 - `common/lib.sh`：find_pat、patch_at、stock_sha（zip 內叫 `common.sh`）。
@@ -33,10 +33,11 @@
 
 ## 發布
 - 版本：根目錄 `VERSION`（X.Y.Z，所有裝置共用）。versionCode = X*10000 + Y*100 + Z（例：0.9.0 → 900），必須大於所有既有 vX.Y.Z 標籤與舊版 versionCode 11。
+- 最新：`v0.9.0`（tag 於 `35998d2`，Latest，兩個 zip）。
 - 標籤：`vX.Y.Z`，一個 release 附所有裝置的 zip（`bt_hires_mixer_<ZIP_MODEL>_vX.Y.Z.zip`）。不再使用 `nx809j-v…` / `liuqin-v…`。
 - 流程：寫好 `RELEASE_NOTES.md`（繁中、英文兩節，不能留 TODO）→ `.\release.ps1 -DryRun` → `.\release.ps1`。腳本 `tools/release.py`：檢查 main、乾淨、與 origin 同步、標籤未用、versionCode 遞增 → build.py → 驗證 zip（必要檔案、版本、無廠商檔、無 CRLF）→ 產生 `dist/release-notes-vX.Y.Z.md` → 在目前 HEAD 打 tag → push tag → gh release create（Latest）。不再產生 release commit。-DryRun 不 tag、不 push。
 - 裝置從 `devices/*/`（有 device.sh 與 module.prop）自動找，新增裝置不用改腳本。
-- 舊標籤（從 RedMagicX 轉來，名稱不變）：`hires-mixer-v0.7.0`（commit `38543d2`）、`hires-mixer-v0.8.0`（commit `ca388fd`，目前 Latest）。v0.8.0 的附件為 `bt_hires_mixer_NX809J_v0.8.0.zip` 與 `bt_hires_mixer_XiaomiPad6Pro_v0.8.0.zip`；v0.7.0 只有 NX809J；說明已註明臨時 root 需要 Hybrid Mount 這類掛載模組。
+- 舊標籤（從 RedMagicX 轉來，名稱不變）：`hires-mixer-v0.7.0`（commit `38543d2`）、`hires-mixer-v0.8.0`（commit `ca388fd`）。v0.8.0 的附件為 `bt_hires_mixer_NX809J_v0.8.0.zip` 與 `bt_hires_mixer_XiaomiPad6Pro_v0.8.0.zip`；v0.7.0 只有 NX809J；說明已註明臨時 root 需要 Hybrid Mount 這類掛載模組。
 - RedMagicX 已沒有模組的 release 與檔案，README 只留連到本儲存庫的連結。
 
 ## 規則
